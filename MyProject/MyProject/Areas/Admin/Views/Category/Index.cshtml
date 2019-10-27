@@ -1,0 +1,45 @@
+﻿@model IEnumerable<MyProject.DataModels.Category>
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>Index</h1>
+
+<p>
+    <a asp-action="Create">Create New</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.CaterogyId)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.CaterogyName)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.ParentCategoryId)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.CaterogyId)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.CaterogyName)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.ParentCategoryId)
+            </td>
+            <td>
+               <a asp-action="Edit" asp-route-id="@item.CaterogyId" class="btn btn-danger">Sửa</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>

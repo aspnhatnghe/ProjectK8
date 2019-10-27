@@ -1,0 +1,19 @@
+﻿@model IEnumerable<MyProject.DataModels.Category>
+@{
+    var parentCategory = Model.Where(p => !p.ParentCategoryId.HasValue);
+}
+@foreach (var item in parentCategory)
+{
+    var childCategory = Model.Where(p => p.ParentCategoryId.HasValue && p.ParentCategoryId.Value == item.CaterogyId);
+    <li>
+        <a href="product-details.html">@item.CaterogyName<i class="fa fa-angle-down"></i></a>
+        <div class="mega-menu">
+            <span>
+                @foreach (var child in childCategory)
+                {
+                    <a href="shop.html">@child.CaterogyName</a>
+                }
+            </span>
+        </div>
+    </li>
+}
