@@ -30,24 +30,49 @@ namespace Business.Implements
             throw new NotImplementedException();
         }
 
-        public IQueryable<TModel> Get(Func<TEntity, bool> filter)
+        public IEnumerable<TModel> Get(Func<TEntity, bool> filter)
         {
-            throw new NotImplementedException();
+            try
+            {
+                var models = new List<TModel>();
+
+                using (var unitOfWork = NewDbContext())
+                {
+                    var repositories = unitOfWork.Respository<TEntity>();
+
+                    var entities = repositories.GetMany(filter);
+
+                    models = _mapper.Map<List<TModel>>(entities);
+                }
+
+                return models;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
         }
 
         public virtual IEnumerable<TModel> GetAll()
         {
-            var models = new List<TModel>();
-
-            using (var unitOfWork = NewDbContext())
+            try
             {
-                var repositories = unitOfWork.Respository<TEntity>();
+                var models = new List<TModel>();
 
-                var entities = repositories.GetAll();
-                models = _mapper.Map<List<TModel>>(entities);
+                using (var unitOfWork = NewDbContext())
+                {
+                    var repositories = unitOfWork.Respository<TEntity>();
+
+                    var entities = repositories.GetAll();
+                    models = _mapper.Map<List<TModel>>(entities);
+                }
+
+                return models;
             }
-
-            return models;
+            catch (Exception ex)
+            {
+                throw ex;
+            }
         }
 
         public TModel GetById(object id)
@@ -67,12 +92,34 @@ namespace Business.Implements
 
         public TModel Insert(TModel item)
         {
-            throw new NotImplementedException();
+            using (var unitOfWork = NewDbContext())
+            {
+                return Insert(item, unitOfWork);
+            }
         }
 
         public TModel Insert(TModel item, IUnitOfWork unitOfWork)
         {
-            throw new NotImplementedException();
+            try
+            {
+                var repositories = unitOfWork.Respository<TEntity>();
+
+                var entity = _mapper.Map<TEntity>(item);
+
+                var entityResult = repositories.Insert(entity);
+
+                bool result = unitOfWork.Save();
+                if (result)
+                {
+                    return _mapper.Map<TModel>(entityResult);
+                }
+
+                return null;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
         }
 
         public IUnitOfWork NewDbContext()

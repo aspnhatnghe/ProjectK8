@@ -14,7 +14,7 @@ namespace Business.Interfaces
         TModel GetFirst(Func<TEntity, bool> filter);
         TModel GetFirstIgnoreNull(Func<TEntity, bool> filter);
         IEnumerable<TModel> GetAll();
-        IQueryable<TModel> Get(Func<TEntity, bool> filter);
+        IEnumerable<TModel> Get(Func<TEntity, bool> filter);
         TModel Insert(TModel item);
         TModel Insert(TModel item, IUnitOfWork unitOfWork);
         TModel Update(TModel item, object id);
