@@ -29,7 +29,7 @@ namespace Business.Implements
 
                     var entitiesResult = entityProduct.OrderByDescending(p => p.Price).Take(10);
                     
-                    models = _mapper.Map<List<ProductModel>>(entitiesResult.);
+                    models = _mapper.Map<List<ProductModel>>(entitiesResult);
                 }
 
                 return models;
