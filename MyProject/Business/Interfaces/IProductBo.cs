@@ -8,5 +8,6 @@ namespace Business.Interfaces
 {
     public interface IProductBo:IBaseBo<ProductModel, Product>
     {
+        IEnumerable<ProductModel> Top10BestSeller();
     }
 }

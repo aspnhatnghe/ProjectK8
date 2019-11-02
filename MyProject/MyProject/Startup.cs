@@ -2,6 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using AutoMapper;
+using Business.Implements;
+using Business.Interfaces;
 using Entities;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -37,10 +40,16 @@ namespace MyProject
 
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
 
+            services.AddAutoMapper(typeof(Startup));
+
             //khai báo các dịch vụ
             services.AddTransient<ICategoryRepo, MockCategoryRepo>();
+            services.AddTransient<IProductBo, ProductBo>();
+            services.AddTransient<ICategoryBo, CategoryBo>();
 
             services.AddDbContext<MyDbContext>(option => option.UseSqlServer(Configuration.GetConnectionString("ProjectK8")));
+
+            
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
