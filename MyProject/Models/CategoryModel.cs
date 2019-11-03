@@ -18,5 +18,7 @@ namespace Models
         [Display(Name = "Mã loại cha")]
         [MaxLength(450)]
         public string ParentCategoryId { get; set; }
+
+        public CategoryModel ParentCategory { get; set; }
     }
 }

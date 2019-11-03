@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Business.Interfaces;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Models;
 
 namespace MyProject.Areas.Admin.Controllers
@@ -18,10 +19,12 @@ namespace MyProject.Areas.Admin.Controllers
         }
         public IActionResult Index()
         {
-            return View(_categoryBo.GetAll());
+            var data = _categoryBo.GetAll();
+            return View(data);
         }
         public IActionResult Create()
         {
+            ViewBag.parentCategory = new SelectList(_categoryBo.GetAll(), "CategoryId", "CategoryName");
             return View();
         }
         [HttpPost]
@@ -47,6 +50,13 @@ namespace MyProject.Areas.Admin.Controllers
         public IActionResult Edit(string id)
         {
             var category = _categoryBo.GetById(id);
+            if(category == null)
+            {
+                return RedirectToAction("Index");
+            }
+
+            ViewBag.parentCategory = new SelectList(_categoryBo.GetAll(), "CategoryId", "CategoryName", category.ParentCategoryId);
+
             return View(category);
         }
         [HttpPost]

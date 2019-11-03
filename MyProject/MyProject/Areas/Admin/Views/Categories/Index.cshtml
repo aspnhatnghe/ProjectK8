@@ -13,9 +13,6 @@
     <thead>
         <tr>
             <th>
-                @Html.DisplayNameFor(model => model.CategoryId)
-            </th>
-            <th>
                 @Html.DisplayNameFor(model => model.CategoryName)
             </th>
             <th>
@@ -32,16 +29,13 @@
         {
             <tr>
                 <td>
-                    @Html.DisplayFor(modelItem => item.CategoryId)
-                </td>
-                <td>
                     @Html.DisplayFor(modelItem => item.CategoryName)
                 </td>
                 <td>
                     @Html.DisplayFor(modelItem => item.Description)
                 </td>
                 <td>
-                    @Html.DisplayFor(modelItem => item.ParentCategoryId)
+                    @item.ParentCategory?.CategoryName
                 </td>
                 <td>
                     <a asp-action="Edit" asp-route-id="@item.CategoryId" class="btn btn-success">Sửa</a>

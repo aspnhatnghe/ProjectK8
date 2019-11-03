@@ -196,13 +196,16 @@ namespace Business.Implements
 
         public TModel GetById(object id)
         {
+            TModel result = null;
             using (var unitOfWork = NewDbContext())
             {
                 var repository = unitOfWork.Repository<TEntity>();
                 var item = repository.GetById(id);
 
-                return _mapper.Map<TModel>(item);
+                result = _mapper.Map<TModel>(item);
             }
+
+            return result;
         }
 
         public IQueryable<TEntity> GetEntities(IUnitOfWork unitOfWork)

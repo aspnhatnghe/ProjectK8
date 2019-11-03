@@ -23,7 +23,11 @@
             </div>
             <div class="form-group">
                 <label asp-for="ParentCategoryId" class="control-label"></label>
-                <input asp-for="ParentCategoryId" class="form-control" />
+
+                <select asp-for="ParentCategoryId" class="form-control" asp-items="@ViewBag.parentCategory">
+                    <option value="">----Chọn một----</option>
+                </select>
+
                 <span asp-validation-for="ParentCategoryId" class="text-danger"></span>
             </div>
             <div class="form-group">
