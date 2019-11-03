@@ -25,7 +25,7 @@ namespace Business.Implements
 
                 using (var unitOfWork = NewDbContext())
                 {
-                    var entityProduct = unitOfWork.Respository<Product>().GetEntities();
+                    var entityProduct = unitOfWork.Repository<Product>().GetEntities();
 
                     var entitiesResult = entityProduct.OrderByDescending(p => p.Price).Take(10);
                     

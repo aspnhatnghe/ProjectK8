@@ -10,6 +10,6 @@ namespace Repositories
         void RollbackTransaction();
         DbContext GetDbContext();
         bool Save();
-        IGenericRepository<T> Respository<T>() where T : class;
+        IGenericRepository<T> Repository<T>() where T : class;
     }
 }

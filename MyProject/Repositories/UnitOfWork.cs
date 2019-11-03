@@ -80,7 +80,7 @@ namespace Repositories
             return context;
         }
 
-        public IGenericRepository<T> Respository<T>() where T : class
+        public IGenericRepository<T> Repository<T>() where T : class
         {
             IGenericRepository<T> repository = null;
 

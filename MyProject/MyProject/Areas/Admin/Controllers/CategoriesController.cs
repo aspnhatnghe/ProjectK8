@@ -47,6 +47,7 @@ namespace MyProject.Areas.Admin.Controllers
         public IActionResult Edit(string id)
         {
             var category = _categoryBo.GetById(id);
+            return View();
         }
     }
 }
