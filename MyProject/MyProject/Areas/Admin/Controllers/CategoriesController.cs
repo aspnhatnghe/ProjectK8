@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Business.Interfaces;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Models;
@@ -96,6 +97,50 @@ namespace MyProject.Areas.Admin.Controllers
             stream.Position = 0;
 
             return File(stream, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", $"Category{DateTime.Now.ToLongTimeString()}.xlsx");
+        }
+
+        public IActionResult ImportExcel()
+        {
+            return View();
+        }
+        [HttpPost]
+        public IActionResult ImportExcel(IFormFile myFile)
+        {
+            if(myFile != null)
+            {
+                List<CategoryModel> categories = new List<CategoryModel>();
+
+                var stream = new MemoryStream();
+                myFile.CopyTo(stream);
+
+                using (var excel = new ExcelPackage(stream))
+                {
+                    //đúng template
+                    var sheet = excel.Workbook.Worksheets[0];
+                    int rowCount = sheet.Dimension.Rows;
+
+                    //duyệt qua từng dòng để xử lý
+                    for(int i = 2; i <= rowCount; i++)
+                    {
+                        try
+                        {
+                            categories.Add(new CategoryModel {
+                                CategoryName = sheet.Cells[i, 2].Value.ToString(),
+                                Description = sheet.Cells[i, 3].Value.ToString()
+                            });
+                        }
+                        catch { }
+                    }
+                }
+
+                foreach (var item in categories)
+                {
+                    var categoryAdded = _categoryBo.Insert(item);
+                }
+            }
+
+            
+            return View();
         }
     }
 }
