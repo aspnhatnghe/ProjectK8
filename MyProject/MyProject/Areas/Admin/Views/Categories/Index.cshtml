@@ -8,6 +8,7 @@
 
 <p>
     <a asp-action="Create">Create New</a>
+    <a asp-action="ExportExcel">Export Excel (EPPlus)</a>
 </p>
 <table class="table">
     <thead>
@@ -32,7 +33,7 @@
                     @Html.DisplayFor(modelItem => item.CategoryName)
                 </td>
                 <td>
-                    @Html.DisplayFor(modelItem => item.Description)
+                    @Html.Raw(item.Description)
                 </td>
                 <td>
                     @item.ParentCategory?.CategoryName

@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Business.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Models;
+using OfficeOpenXml;
 
 namespace MyProject.Areas.Admin.Controllers
 {
@@ -69,6 +71,31 @@ namespace MyProject.Areas.Admin.Controllers
             }
             _categoryBo.Update(model, id);
             return RedirectToAction("Index");
+        }
+
+        public IActionResult ExportExcel()
+        {
+            //chuẩn bị dữ liệu
+            var data = _categoryBo.GetAll();
+
+            //trả về trình duyệt file <==> MemoryStream
+            var stream = new MemoryStream();
+
+            using (var excel = new ExcelPackage(stream))
+            {
+                var sheet = excel.Workbook.Worksheets.Add("CategoryData");
+
+                //đổ data vào sheet
+                //sheet.Cells["A1"]
+                //sheet.Cells[rowIndex, colIndex].Value = "AAA";//index (row/col) begin 1
+                sheet.Cells.LoadFromCollection(data, true);
+
+                excel.Save();
+            }
+
+            stream.Position = 0;
+
+            return File(stream, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", $"Category{DateTime.Now.ToLongTimeString()}.xlsx");
         }
     }
 }

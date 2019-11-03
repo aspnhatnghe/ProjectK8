@@ -4,6 +4,9 @@
     ViewData["Title"] = "Create";
 }
 
+<!-- https://summernote.org/getting-started/ -->
+<link href="https://cdnjs.cloudflare.com/ajax/libs/summernote/0.8.12/summernote-bs4.css" rel="stylesheet">
+
 <h1>Thêm Loại</h1>
 
 <hr />
@@ -43,4 +46,14 @@
 
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/summernote/0.8.12/summernote-bs4.js"></script>
+    <script>
+        $(function () {
+            $("#Description").summernote({
+                tabsize: 2,
+                height: 100
+            });
+        });
+    </script>
 }
