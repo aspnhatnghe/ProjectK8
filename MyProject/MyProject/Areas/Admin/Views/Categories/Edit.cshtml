@@ -1,16 +1,21 @@
 ﻿@model Models.CategoryModel
 
 @{
-    ViewData["Title"] = "Create";
+    ViewData["Title"] = "Edit";
 }
 
-<h1>Thêm Loại</h1>
+<h1>Sửa loại</h1>
 
 <hr />
 <div class="row">
     <div class="col-md-12">
-        <form asp-action="Create">
+        <form asp-action="Edit">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="CategoryId" class="control-label"></label>
+                <input asp-for="CategoryId" class="form-control" readonly />
+                <span asp-validation-for="CategoryId" class="text-danger"></span>
+            </div>
             <div class="form-group">
                 <label asp-for="CategoryName" class="control-label"></label>
                 <input asp-for="CategoryName" class="form-control" />

@@ -28,26 +28,26 @@
         </tr>
     </thead>
     <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.CategoryId)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.CategoryName)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Description)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.ParentCategoryId)
-            </td>
-            <td>
-                @Html.ActionLink("Edit", "Edit", new { /* id=item.PrimaryKey */ }) |
-                @Html.ActionLink("Details", "Details", new { /* id=item.PrimaryKey */ }) |
-                @Html.ActionLink("Delete", "Delete", new { /* id=item.PrimaryKey */ })
-            </td>
-        </tr>
-}
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.CategoryId)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.CategoryName)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Description)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.ParentCategoryId)
+                </td>
+                <td>
+                    <a asp-action="Edit" asp-route-id="@item.CategoryId" class="btn btn-success">Sửa</a>
+                    <a asp-action="Delete" asp-route-id="@item.CategoryId" class="btn btn-danger">Xóa</a>
+                </td>
+            </tr>
+        }
     </tbody>
 </table>

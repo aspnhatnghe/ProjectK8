@@ -47,7 +47,18 @@ namespace MyProject.Areas.Admin.Controllers
         public IActionResult Edit(string id)
         {
             var category = _categoryBo.GetById(id);
-            return View();
+            return View(category);
+        }
+        [HttpPost]
+        public IActionResult Edit(string id, CategoryModel model)
+        {
+            if(id != model.CategoryId)
+            {
+                ModelState.AddModelError("loi", "Sai thông tin");
+                return View();
+            }
+            _categoryBo.Update(model, id);
+            return RedirectToAction("Index");
         }
     }
 }
