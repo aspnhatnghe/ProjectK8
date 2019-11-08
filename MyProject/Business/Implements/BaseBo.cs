@@ -14,15 +14,417 @@ namespace Business.Implements
         where TModel : class
         where TEntity : class
     {
-        private readonly IMapper _mapper;
-        private readonly IServiceProvider _serviceProvider;
-        public BaseBo(IMapper mapper, IServiceProvider serviceProvider)
+        protected readonly IMapper _mapper;
+        protected readonly IServiceProvider _serviceProvider;
+
+        public BaseBo(IServiceProvider serviceProvider)
         {
-            _mapper = mapper;
             _serviceProvider = serviceProvider;
+            _mapper = serviceProvider.GetRequiredService<IMapper>();
         }
 
-        #region Delete
+        public IUnitOfWork NewDbContext()
+        {
+            var newContext = _serviceProvider.GetRequiredService<IServiceScopeFactory>().CreateScope()
+                .ServiceProvider.GetRequiredService<MyDbContext>();
+            return new UnitOfWork(newContext);
+        }
+
+        public virtual IQueryable<TModel> GetAll()
+        {
+            try
+            {
+
+                // Get entity from data context.
+                using (var unitOfWork = NewDbContext())
+                {
+                    // Get repository.
+                    return GetAll(unitOfWork);
+                }
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+        public virtual IQueryable<TModel> GetAll(IUnitOfWork unitOfWork)
+        {
+            try
+            {
+                var models = new List<TModel>();
+
+                // Get entity from data context.
+                // Get repository.
+                var repository = unitOfWork.Repository<TEntity>();
+
+                // Get all entity in datacontext.
+                var entities = repository.GetAll();
+
+                // Map model list to models list.
+                models = _mapper.Map<List<TModel>>(entities);
+
+                return models.AsQueryable();
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+        public IEnumerable<TModel> Get(Func<TEntity, bool> filter)
+        {
+            try
+            {
+                // Get entity from data context.
+                using (var unitOfWork = NewDbContext())
+                {
+                    // Get repository.
+                    return Get(unitOfWork, filter);
+                }
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+        public IEnumerable<TModel> Get(IUnitOfWork unitOfWork, Func<TEntity, bool> filter)
+        {
+            try
+            {
+                var models = new List<TModel>();
+
+                // Get entity from data context.
+
+                // Get repository.
+                var repository = unitOfWork.Repository<TEntity>();
+
+                // Get all entity in datacontext.
+                var entities = repository.GetManyQueryable(filter);
+
+                // Map model list to models list.
+                models = _mapper.Map<List<TModel>>(entities);
+
+                return models;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+        public IEnumerable<TModel> GetIgnoreNull(Func<TEntity, bool> filter)
+        {
+            try
+            {
+                var models = new List<TModel>();
+
+                // Get entity from data context.
+                using (var unitOfWork = NewDbContext())
+                {
+                    // Get repository.
+                    var repository = unitOfWork.Repository<TEntity>();
+
+                    // Get all entity in datacontext.
+                    var entities = repository.GetMany(filter);
+                    if (entities.Any())
+                    {
+                        // Map model list to models list.
+                        models = _mapper.Map<List<TModel>>(entities);
+                    }
+                }
+
+                return models;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+        public TModel GetFirstIgnoreNull(Func<TEntity, bool> filter)
+        {
+            try
+            {
+
+                // Get entity from data context.
+                using (var unitOfWork = NewDbContext())
+                {
+                    // Get repository.
+                    return GetFirstIgnoreNull(unitOfWork, filter);
+                }
+
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+        public TModel GetFirstIgnoreNull(IUnitOfWork unitOfWork, Func<TEntity, bool> filter)
+        {
+            try
+            {
+                TModel models = null;
+
+                // Get repository.
+                var repository = unitOfWork.Repository<TEntity>();
+
+                // Get all entity in datacontext.
+                var entities = repository.GetManyQueryable(filter);
+                if (entities.Any())
+                {
+                    models = _mapper.Map<TModel>(entities.First());
+                }
+
+                return models;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+        public IQueryable<TModel> GetTop(Func<TEntity, bool> filter, int count, Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>> orderBy = null)
+        {
+            try
+            {
+                var models = new List<TModel>();
+
+                // Get entity from data context.
+                using (var unitOfWork = NewDbContext())
+                {
+                    // Get repository.
+                    var repository = unitOfWork.Repository<TEntity>();
+
+                    // Get all entity in datacontext.
+                    var entities = orderBy(repository.GetManyQueryable(filter)).Take(count);
+
+                    models = _mapper.Map<List<TModel>>(entities);
+                    // Map model list to models list.
+
+                }
+
+                return models.AsQueryable();
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+        public IQueryable<TEntity> GetTopEntities(IUnitOfWork unitOfWork, Func<TEntity, bool> filter, int count, Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>> orderBy = null)
+        {
+            try
+            {
+                var models = new List<TModel>();
+
+                // Get entity from data context.
+
+                // Get repository.
+                var repository = unitOfWork.Repository<TEntity>();
+
+                // Get all entity in datacontext.
+                var entities = orderBy(repository.GetManyQueryable(filter)).Take(count);
+
+                return entities;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+        public virtual TModel GetById(object id)
+        {
+            // Get entity from data context.
+            using (var unitOfWork = NewDbContext())
+            {
+                // Get repository.
+                return GetById(unitOfWork, id);
+            }
+        }
+        public virtual TModel GetById(IUnitOfWork unitOfWork, object id)
+        {
+            // Get entity from data context.
+
+            // Get repository.
+            var repository = unitOfWork.Repository<TEntity>();
+
+            var item = repository.GetById(id);
+
+            return _mapper.Map<TModel>(item);
+
+        }
+        public virtual TModel GetFirst(Func<TEntity, bool> filter)
+        {
+            // Get entity from data context.
+            using (var unitOfWork = NewDbContext())
+            {
+                // Get repository.
+                return GetFirst(unitOfWork, filter);
+            }
+        }
+
+        public virtual TModel GetFirst(IUnitOfWork unitOfWork, Func<TEntity, bool> filter)
+        {
+            // Get repository.
+            var repository = unitOfWork.Repository<TEntity>();
+
+            var item = repository.GetFirst(filter);
+
+            return _mapper.Map<TModel>(item);
+        }
+
+        public TModel Insert(TModel item)
+        {
+            using (var unitOfWork = NewDbContext())
+            {
+                return Insert(item, unitOfWork);
+            }
+        }
+
+        public virtual TModel Insert(TModel item, IUnitOfWork unitOfWork)
+        {
+            try
+            {
+                // Get repository.
+                var repository = unitOfWork.Repository<TEntity>();
+
+                // Mapping to TEntity
+                var entity = _mapper.Map<TEntity>(item);
+
+                // Insert TEntity
+                var entityResult = repository.Insert(entity);
+
+                // Save change to datacontext.
+                bool success = unitOfWork.Save();
+
+                if (success == true)
+                {
+                    // Return TModel
+                    return _mapper.Map<TModel>(entityResult);
+                }
+                return null;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+        public TEntity InsertEntity(TEntity item)
+        {
+            using (var unitOfWork = NewDbContext())
+            {
+                return InsertEntity(item, unitOfWork);
+
+            }
+        }
+        public virtual TEntity InsertEntity(TEntity item, IUnitOfWork unitOfWork)
+        {
+            try
+            {
+                // Get repository.
+                var repository = unitOfWork.Repository<TEntity>();
+
+                // Insert TEntity
+
+                var entityResult = repository.Insert(item);
+
+                // Save change to datacontext.
+                unitOfWork.Save();
+
+                // Return TModel
+                return entityResult;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+        public virtual IEnumerable<TEntity> InsertEntities(IEnumerable<TEntity> items)
+        {
+            using (var unitOfWork = NewDbContext())
+            {
+                return InsertEntities(items, unitOfWork);
+            }
+        }
+        public virtual IEnumerable<TEntity> InsertEntities(IEnumerable<TEntity> items, IUnitOfWork unitOfWork)
+        {
+            var repository = unitOfWork.Repository<TEntity>();
+            return repository.Insert(items);
+        }
+        public TModel Update(TModel item, object id)
+        {
+            using (var unitOfWork = NewDbContext())
+            {
+                return Update(item, id, unitOfWork);
+            }
+        }
+
+        public virtual TModel Update(TModel item, object id, IUnitOfWork unitOfWork)
+        {
+            try
+            {
+                // Get repository.
+                var repository = unitOfWork.Repository<TEntity>();
+
+                // Get Entity
+                var entity = repository.Find(id);
+                if (entity != null)
+                {
+                    // Mapping to TEntity
+                    entity = _mapper.Map(item, entity);
+                }
+
+                // Update TEntity
+                var entityResult = repository.Update(entity);
+
+                // Save change to datacontext.
+                unitOfWork.Save();
+
+                // Return TModel
+                return _mapper.Map<TModel>(entityResult);
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+        public TModel UpdateEntity(TEntity item, object id)
+        {
+            using (var unitOfWork = NewDbContext())
+            {
+                return UpdateEntity(item, id, unitOfWork);
+
+            }
+        }
+        public virtual TModel UpdateEntity(TEntity item, object id, IUnitOfWork unitOfWork)
+        {
+            try
+            {
+                // Get repository.
+                var repository = unitOfWork.Repository<TEntity>();
+
+                // Get Entity
+                var entity = repository.Find(id);
+
+                if (entity != null)
+                {
+                    // Mapping to TEntity
+                    entity = _mapper.Map(item, entity);
+                }
+
+                // Update TEntity
+                var entityResult = repository.Update(entity);
+
+                // Save change to datacontext.
+                unitOfWork.Save();
+
+                // Return TModel
+                return _mapper.Map<TModel>(entityResult);
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
         public bool Delete(object id)
         {
             using (var unitOfWork = NewDbContext())
@@ -31,7 +433,7 @@ namespace Business.Implements
             }
         }
 
-        public bool Delete(object id, IUnitOfWork unitOfWork)
+        public virtual bool Delete(object id, IUnitOfWork unitOfWork)
         {
             try
             {
@@ -50,15 +452,14 @@ namespace Business.Implements
             }
         }
 
-        public bool DeleteByEntity(TEntity entity)
+        public virtual bool DeleteEntities(IEnumerable<TEntity> entitiesToDelete)
         {
             using (var unitOfWork = NewDbContext())
             {
-                return DeleteByEntity(entity, unitOfWork);
+                return DeleteEntities(entitiesToDelete, unitOfWork);
             }
         }
-
-        public bool DeleteByEntity(TEntity entity, IUnitOfWork unitOfWork)
+        public virtual bool DeleteEntities(IEnumerable<TEntity> entitiesToDelete, IUnitOfWork unitOfWork)
         {
             try
             {
@@ -66,12 +467,10 @@ namespace Business.Implements
                 var repository = unitOfWork.Repository<TEntity>();
 
                 // Delete model.
-                repository.Delete(entity);
+                repository.DeleteRange(entitiesToDelete);
 
                 // Save change to datacontext
-                unitOfWork.Save();
-
-                return true;
+                return unitOfWork.Save();
             }
             catch (Exception ex)
             {
@@ -87,7 +486,7 @@ namespace Business.Implements
             }
         }
 
-        public bool DeleteEntity(TModel item, IUnitOfWork unitOfWork)
+        public virtual bool DeleteEntity(TModel item, IUnitOfWork unitOfWork)
         {
             try
             {
@@ -110,7 +509,52 @@ namespace Business.Implements
             }
         }
 
-        #endregion
+        public bool DeleteByEntity(TEntity entity)
+        {
+            using (var unitOfWork = NewDbContext())
+            {
+                return DeleteByEntity(entity, unitOfWork);
+            }
+        }
+
+        public virtual bool DeleteByEntity(TEntity entity, IUnitOfWork unitOfWork)
+        {
+            try
+            {
+                // Get repository.
+                var repository = unitOfWork.Repository<TEntity>();
+
+                // Delete model.
+                repository.Delete(entity);
+
+                // Save change to datacontext
+                unitOfWork.Save();
+
+                return true;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+
+        public bool Exists(object id)
+        {
+            bool exist;
+
+            // Get entity from data context.
+            using (var unitOfWork = NewDbContext())
+            {
+                // Get repository.
+                var repository = unitOfWork.Repository<TEntity>();
+
+                // Check exist.
+                exist = repository.Exists(id);
+            }
+
+            return exist;
+        }
 
         public int ExecuteSqlCommand(string query, params object[] @params)
         {
@@ -134,78 +578,6 @@ namespace Business.Implements
                 var repository = unitOfWork.Repository<TEntity>();
                 return repository.FromSql<T>(query, @params);
             }
-        }
-
-        public bool Exists(object id)
-        {
-            bool exist;
-
-            using (var unitOfWork = NewDbContext())
-            {
-                var repository = unitOfWork.Repository<TEntity>();
-                exist = repository.Exists(id);
-            }
-
-            return exist;
-        }
-
-        public IEnumerable<TModel> Get(Func<TEntity, bool> filter)
-        {
-            try
-            {
-                var models = new List<TModel>();
-
-                using (var unitOfWork = NewDbContext())
-                {
-                    var repositories = unitOfWork.Repository<TEntity>();
-
-                    var entities = repositories.GetMany(filter);
-
-                    models = _mapper.Map<List<TModel>>(entities);
-                }
-
-                return models;
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
-        }
-
-        public virtual IEnumerable<TModel> GetAll()
-        {
-            try
-            {
-                var models = new List<TModel>();
-
-                using (var unitOfWork = NewDbContext())
-                {
-                    var repositories = unitOfWork.Repository<TEntity>();
-
-                    var entities = repositories.GetAll();
-                    models = _mapper.Map<List<TModel>>(entities);
-                }
-
-                return models;
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
-        }
-
-        public TModel GetById(object id)
-        {
-            TModel result = null;
-            using (var unitOfWork = NewDbContext())
-            {
-                var repository = unitOfWork.Repository<TEntity>();
-                var item = repository.GetById(id);
-
-                result = _mapper.Map<TModel>(item);
-            }
-
-            return result;
         }
 
         public IQueryable<TEntity> GetEntities(IUnitOfWork unitOfWork)
@@ -238,45 +610,6 @@ namespace Business.Implements
                 return repository.GetEntitiesWithInclude(filter, includes);
             }
         }
-
-        public TModel GetFirst(Func<TEntity, bool> filter)
-        {
-            using (var unitOfWork = NewDbContext())
-            {
-                var repository = unitOfWork.Repository<TEntity>();
-
-                var item = repository.GetFirst(filter);
-
-                return _mapper.Map<TModel>(item);
-            }
-        }
-
-        public TModel GetFirstIgnoreNull(Func<TEntity, bool> filter)
-        {
-            try
-            {
-                TModel models = null;
-
-                using (var unitOfWork = NewDbContext())
-                {
-                    var repository = unitOfWork.Repository<TEntity>();
-
-                    var entities = repository.GetMany(filter);
-                    if (entities.Any())
-                    {
-                        models = _mapper.Map<TModel>(entities.First());
-                    }
-
-                }
-
-                return models;
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
-        }
-
         public TModel GetFirstWithInclude(Expression<Func<TEntity, bool>> filter, params Expression<Func<TEntity, object>>[] includes)
         {
             using (var unitOfWork = NewDbContext())
@@ -298,203 +631,6 @@ namespace Business.Implements
                 }
             }
             return null;
-        }
-
-        public IEnumerable<TModel> GetIgnoreNull(Func<TEntity, bool> filter)
-        {
-            try
-            {
-                var models = new List<TModel>();
-
-                using (var unitOfWork = NewDbContext())
-                {
-                    var repository = unitOfWork.Repository<TEntity>();
-
-                    var entities = repository.GetMany(filter);
-                    if (entities.Any())
-                    {
-                        models = _mapper.Map<List<TModel>>(entities);
-                    }
-                }
-
-                return models;
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
-        }
-
-        public IEnumerable<TModel> GetTop(Func<TEntity, bool> filter, int count, Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>> orderBy = null)
-        {
-            try
-            {
-                var models = new List<TModel>();
-
-                // Get entity from data context.
-                using (var unitOfWork = NewDbContext())
-                {
-                    // Get repository.
-                    var repository = unitOfWork.Repository<TEntity>();
-
-                    // Get all entity in datacontext.
-                    var entities = orderBy(repository.GetManyQueryable(filter)).Take(count);
-
-                    models = _mapper.Map<List<TModel>>(entities);
-                    // Map model list to models list.
-
-                }
-
-                return models;
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
-        }
-
-        public TModel Insert(TModel item)
-        {
-            using (var unitOfWork = NewDbContext())
-            {
-                return Insert(item, unitOfWork);
-            }
-        }
-
-        public TModel Insert(TModel item, IUnitOfWork unitOfWork)
-        {
-            try
-            {
-                var repositories = unitOfWork.Repository<TEntity>();
-
-                var entity = _mapper.Map<TEntity>(item);
-
-                var entityResult = repositories.Insert(entity);
-
-                bool result = unitOfWork.Save();
-                if (result)
-                {
-                    return _mapper.Map<TModel>(entityResult);
-                }
-
-                return null;
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
-        }
-
-        public TEntity InsertEntity(TEntity item)
-        {
-            using (var unitOfWork = NewDbContext())
-            {
-                return InsertEntity(item, unitOfWork);
-
-            }
-        }
-
-        public TEntity InsertEntity(TEntity item, IUnitOfWork unitOfWork)
-        {
-            try
-            {
-                var repository = unitOfWork.Repository<TEntity>();
-
-                var entityResult = repository.Insert(item);
-
-                unitOfWork.Save();
-
-                return entityResult;
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
-        }
-
-        public IUnitOfWork NewDbContext()
-        {
-            var context = _serviceProvider.GetRequiredService<MyDbContext>();
-
-            return new UnitOfWork(context);
-        }
-
-        public TModel Update(TModel item, object id)
-        {
-            using (var unitOfWork = NewDbContext())
-            {
-                return Update(item, id, unitOfWork);
-            }
-        }
-
-        public TModel Update(TModel item, object id, IUnitOfWork unitOfWork)
-        {
-            try
-            {
-                // Get repository.
-                var repository = unitOfWork.Repository<TEntity>();
-
-                // Get Entity
-                var entity = repository.Find(id);
-                if (entity != null)
-                {
-                    // Mapping to TEntity
-                    entity = _mapper.Map(item, entity);
-                }
-
-                // Update TEntity
-                var entityResult = repository.Update(entity);
-
-                // Save change to datacontext.
-                unitOfWork.Save();
-
-                // Return TModel
-                return _mapper.Map<TModel>(entityResult);
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
-        }
-
-        public TModel UpdateEntity(TEntity item, object id)
-        {
-            using (var unitOfWork = NewDbContext())
-            {
-                return UpdateEntity(item, id, unitOfWork);
-
-            }
-        }
-
-        public TModel UpdateEntity(TEntity item, object id, IUnitOfWork unitOfWork)
-        {
-            try
-            {
-                // Get repository.
-                var repository = unitOfWork.Repository<TEntity>();
-
-                // Get Entity
-                var entity = repository.Find(id);
-
-                if (entity != null)
-                {
-                    // Mapping to TEntity
-                    entity = _mapper.Map(item, entity);
-                }
-
-                // Update TEntity
-                var entityResult = repository.Update(entity);
-
-                // Save change to datacontext.
-                unitOfWork.Save();
-
-                // Return TModel
-                return _mapper.Map<TModel>(entityResult);
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
         }
     }
 }

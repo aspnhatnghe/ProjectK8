@@ -11,10 +11,8 @@ namespace Business.Implements
 {
     public class ProductBo : BaseBo<ProductModel, Product>, IProductBo
     {
-        private readonly IMapper _mapper;
-        public ProductBo(IMapper mapper, IServiceProvider serviceProvider) : base(mapper, serviceProvider)
+        public ProductBo(IServiceProvider serviceProvider) : base(serviceProvider)
         {
-            _mapper = mapper;
         }
 
         public IEnumerable<ProductModel> Top10BestSeller()
@@ -28,7 +26,7 @@ namespace Business.Implements
                     var entityProduct = unitOfWork.Repository<Product>().GetEntities();
 
                     var entitiesResult = entityProduct.OrderByDescending(p => p.Price).Take(10);
-                    
+
                     models = _mapper.Map<List<ProductModel>>(entitiesResult);
                 }
 

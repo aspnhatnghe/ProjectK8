@@ -8,28 +8,12 @@ namespace Repositories
     public interface IGenericRepository<TEntity> where TEntity : class
     {
         IQueryable<TEntity> GetAll();
-
-        TEntity Find(object id);
-
-        TEntity GetById(object id);
-
-        TEntity Insert(TEntity entityToInsert);
-
-        List<TEntity> Insert(List<TEntity> entitiesToInsert);
-
-        TEntity Update(TEntity entityToUpdate);
-
-        bool Delete(object id);
-
-        bool Delete(TEntity entityToDelete);
-
         IEnumerable<TEntity> GetMany(Func<TEntity, bool> where);
-
         IQueryable<TEntity> GetManyQueryable(Func<TEntity, bool> where);
-
+        TEntity GetFirst(Func<TEntity, bool> predicate);
         TEntity GetFirstOrDefault(Func<TEntity, Boolean> where);
-
-        bool Delete(Func<TEntity, Boolean> where);
+        TEntity GetById(object id);
+        TEntity GetSingle(Func<TEntity, bool> predicate);
 
         IQueryable<TEntity> GetEntitiesWithInclude(Expression<Func<TEntity, bool>> filter, params Expression<Func<TEntity, object>>[] includes);
         IQueryable<TEntity> GetEntitiesWithInclude(params Expression<Func<TEntity, object>>[] includes);
@@ -38,11 +22,28 @@ namespace Repositories
 
         IQueryable<TEntity> GetEntities();
 
+        TEntity Find(object id);
+        
+
+        TEntity Insert(TEntity entityToInsert);
+
+        IEnumerable<TEntity> Insert(IEnumerable<TEntity> entitiesToInsert);
+
+
+        TEntity Update(TEntity entityToUpdate);
+
+
+        bool Delete(object id);
+
+        bool Delete(TEntity entityToDelete);
+
+        void DeleteRange(IEnumerable<TEntity> entitiesToDelete);
+
+        bool Delete(Func<TEntity, Boolean> where);
+
+
         bool Exists(object primaryKey);
-
-        TEntity GetSingle(Func<TEntity, bool> predicate);
-
-        TEntity GetFirst(Func<TEntity, bool> predicate);
+                
 
         int ExecuteSqlCommand(string query, params object[] @params);
 

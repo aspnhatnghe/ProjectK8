@@ -1,11 +1,9 @@
 ﻿@model Models.CategoryModel
-
 @{
     ViewData["Title"] = "Edit";
 }
-
+<link href="https://cdnjs.cloudflare.com/ajax/libs/summernote/0.8.12/summernote-bs4.css" rel="stylesheet">
 <h1>Sửa loại</h1>
-
 <hr />
 <div class="row">
     <div class="col-md-12">
@@ -39,11 +37,17 @@
         </form>
     </div>
 </div>
-
 <div>
     <a asp-action="Index">Back to List</a>
 </div>
-
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/summernote/0.8.12/summernote-bs4.js"></script>
+    <script>
+    $(function () {
+            $("#Description").summernote({
+                tabsize: 2,
+                height: 100
+            });
+        });</script>
 }

@@ -13,12 +13,51 @@ namespace Repositories
     {
         private readonly DbContext context;
         private DbSet<TEntity> entities;
-        string errorMessage = string.Empty;
 
-        public GenericRepository(DbContext context)
+        public GenericRepository(DbContext _context)
         {
-            this.context = context;
+            this.context = _context;
             entities = context.Set<TEntity>();
+        }
+
+        public IQueryable<TEntity> GetAll()
+        {
+            return entities.AsQueryable();
+        }
+
+        public virtual TEntity GetById(object id)
+        {
+            return entities.Find(id);
+        }
+
+        public TEntity Insert(TEntity entityToInsert)
+        {
+            if (entityToInsert == null)
+            {
+                throw new ArgumentNullException("entityToInsert");
+            }
+            entities.Add(entityToInsert);
+            return entityToInsert;
+        }
+
+        public IEnumerable<TEntity> Insert(IEnumerable<TEntity> entitiesToInsert)
+        {
+            if (entitiesToInsert == null)
+            {
+                throw new ArgumentNullException("entitiesToInsert");
+            }
+            entities.AddRange(entitiesToInsert);
+            return entitiesToInsert;
+        }
+
+        public TEntity Update(TEntity entityToUpdate)
+        {
+            if (entityToUpdate == null)
+            {
+                throw new ArgumentNullException("entityToUpdate");
+            }
+            context.Entry(entityToUpdate).State = EntityState.Modified;
+            return entityToUpdate;
         }
 
         public bool Delete(object id)
@@ -44,11 +83,37 @@ namespace Repositories
 
             return false;
         }
+        public void DeleteRange(IEnumerable<TEntity> entitiesToDelete)
+        {
+            if (entitiesToDelete == null)
+            {
+                throw new ArgumentNullException("entityToDelete");
+            }
+            entities.RemoveRange(entitiesToDelete);
+        }
+        public IEnumerable<TEntity> GetMany(Func<TEntity, bool> where)
+        {
+            return entities.Where(where).ToList();
+        }
+
+        public IQueryable<TEntity> GetManyQueryable(Func<TEntity, bool> where = null)
+        {
+            if (where != null)
+            {
+                return entities.Where(where).AsQueryable();
+            }
+
+            return entities.AsQueryable();
+        }
+
+        public TEntity GetFirstOrDefault(Func<TEntity, bool> where)
+        {
+            return entities.Where(where).FirstOrDefault();
+        }
 
         public bool Delete(Func<TEntity, bool> where)
         {
             bool isDeleted = false;
-
             var objects = entities.Where(where).AsQueryable();
             foreach (var obj in objects)
             {
@@ -57,13 +122,29 @@ namespace Repositories
                     isDeleted = true;
                 }
             }
-
             return isDeleted;
         }
 
-        public int ExecuteSqlCommand(string query, params object[] @params)
-        {   
-            return context.Database.ExecuteSqlCommand(query, @params);
+        public IQueryable<TEntity> GetEntitiesWithInclude(params Expression<Func<TEntity, object>>[] includes)
+        {
+            IQueryable<TEntity> query = this.entities;
+            return includes.Aggregate(query, (current, inc) => current.Include(inc));
+        }
+
+        public IQueryable<TEntity> GetEntitiesWithInclude(Expression<Func<TEntity, bool>> filter, params Expression<Func<TEntity, object>>[] includes)
+        {
+            IQueryable<TEntity> query = this.entities.Where(filter);
+            return includes.Aggregate(query, (current, inc) => current.Include(inc));
+        }
+
+        public IQueryable<TEntity> GetEntities(Expression<Func<TEntity, bool>> filter)
+        {
+            return entities.Where(filter);
+        }
+
+        public IQueryable<TEntity> GetEntities()
+        {
+            return entities;
         }
 
         public bool Exists(object primaryKey)
@@ -71,9 +152,24 @@ namespace Repositories
             return entities.Find(primaryKey) != null;
         }
 
+        public TEntity GetSingle(Func<TEntity, bool> predicate)
+        {
+            return entities.Single(predicate);
+        }
+
+        public TEntity GetFirst(Func<TEntity, bool> predicate)
+        {
+            return entities.First(predicate);
+        }
+
         public TEntity Find(object id)
         {
             return entities.Find(id);
+        }
+
+        public int ExecuteSqlCommand(string query, params object[] @params)
+        {
+            return context.Database.ExecuteSqlCommand(query, @params);
         }
 
         public List<T> FromSql<T>(string query, params object[] @params) where T : class
@@ -81,6 +177,7 @@ namespace Repositories
             var res = ExecSQL<T>(query, @params);
             return res;
         }
+
         private List<T> ExecSQL<T>(string query, params object[] @params)
         {
             using (context)
@@ -202,93 +299,6 @@ namespace Repositories
             }
         }
 
-        public IQueryable<TEntity> GetAll()
-        {
-            return entities.AsQueryable();
-        }
 
-        public TEntity GetById(object id)
-        {
-            return entities.Find(id);
-        }
-
-        public IQueryable<TEntity> GetEntities(Expression<Func<TEntity, bool>> filter)
-        {
-            return entities.Where(filter);
-        }
-
-        public IQueryable<TEntity> GetEntities()
-        {
-            return entities;
-        }
-
-        public IQueryable<TEntity> GetEntitiesWithInclude(Expression<Func<TEntity, bool>> filter, params Expression<Func<TEntity, object>>[] includes)
-        {
-            IQueryable<TEntity> query = this.entities.Where(filter);
-
-            return includes.Aggregate(query, (current, inc) => current.Include(inc));
-        }
-
-        public IQueryable<TEntity> GetEntitiesWithInclude(params Expression<Func<TEntity, object>>[] includes)
-        {
-            IQueryable<TEntity> query = this.entities;
-
-            return includes.Aggregate(query, (current, inc) => current.Include(inc));
-        }
-
-        public TEntity GetFirst(Func<TEntity, bool> predicate)
-        {
-            return entities.First(predicate);
-        }
-
-        public TEntity GetFirstOrDefault(Func<TEntity, bool> where)
-        {
-            return entities.Where(where).FirstOrDefault();
-        }
-
-        public IEnumerable<TEntity> GetMany(Func<TEntity, bool> where)
-        {
-            return entities.Where(where).ToList();
-        }
-
-        public IQueryable<TEntity> GetManyQueryable(Func<TEntity, bool> where)
-        {
-            if (where != null)
-            {
-                return entities.Where(where).AsQueryable();
-            }
-
-            return entities.AsQueryable();
-        }
-
-        public TEntity GetSingle(Func<TEntity, bool> predicate)
-        {
-            return entities.Single(predicate);
-        }
-
-        public TEntity Insert(TEntity entityToInsert)
-        {
-            if (entityToInsert == null)
-            {
-                throw new ArgumentNullException("entityToInsert");
-            }
-            entities.Add(entityToInsert);
-            return entityToInsert;
-        }
-
-        public List<TEntity> Insert(List<TEntity> entitiesToInsert)
-        {
-            throw new NotImplementedException();
-        }
-
-        public TEntity Update(TEntity entityToUpdate)
-        {
-            if (entityToUpdate == null)
-            {
-                throw new ArgumentNullException("entityToUpdate");
-            }
-            context.Entry(entityToUpdate).State = EntityState.Modified;
-            return entityToUpdate;
-        }
     }
 }

@@ -8,7 +8,7 @@ namespace Business.Implements
 {
     public class CategoryBo : BaseBo<CategoryModel, Category>, ICategoryBo
     {
-        public CategoryBo(IMapper mapper, IServiceProvider serviceProvider) : base(mapper, serviceProvider)
+        public CategoryBo(IServiceProvider serviceProvider) : base(serviceProvider)
         {
         }
     }
