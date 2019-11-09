@@ -16,6 +16,7 @@ namespace MyProject.Models
                 .ReverseMap();
             CreateMap<CategoryModel, Category>()
                 .ReverseMap();
+            CreateMap<SupplierModel, Supplier>().ReverseMap();
         }
     }
 }
