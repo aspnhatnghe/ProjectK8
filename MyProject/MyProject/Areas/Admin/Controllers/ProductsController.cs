@@ -3,8 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Business.Interfaces;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Models;
+using MyProject.Helpers;
 
 namespace MyProject.Areas.Admin.Controllers
 {
@@ -30,6 +33,18 @@ namespace MyProject.Areas.Admin.Controllers
             ViewBag.Category = new SelectList(_categoryBo.GetAll(), "CategoryId", "CategoryName");
             ViewBag.Supplier = new SelectList(_supplierBo.GetAll(), "SupplierId", "SupplierName");
             return View();
+        }
+
+        [HttpPost]
+        public IActionResult Create(ProductModel model, IFormFile fHinh)
+        {
+            if(!ModelState.IsValid)
+            {
+                ModelState.AddModelError("loi", "Còn lỗi");
+                return View();
+            }
+            var fileName = MyTools.UploadFile(fHinh, "products");
+            return RedirectToAction("Index");
         }
     }
 }
