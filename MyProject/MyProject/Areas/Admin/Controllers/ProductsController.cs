@@ -44,7 +44,43 @@ namespace MyProject.Areas.Admin.Controllers
                 return View();
             }
             var fileName = MyTools.UploadFile(fHinh, "products");
-            return RedirectToAction("Index");
+            model.Image = fileName;
+
+            var productCreated = _productBo.Insert(model);
+            return RedirectToAction("Edit", new { id = productCreated.ProductId});
+        }
+
+        public IActionResult Edit(int id)
+        {
+            var product = _productBo.GetById(id);
+            //var pro = _productBo.GetFirstWithInclude(p => p.ProductId == id, p => p.Category, p => p.Supplier, p =>p.OrderDetails);
+
+            ViewBag.Category = new SelectList(_categoryBo.GetAll(), "CategoryId", "CategoryName");
+            ViewBag.Supplier = new SelectList(_supplierBo.GetAll(), "SupplierId", "SupplierName");
+
+            return View(product);
+        }
+
+        [HttpPost]
+        public IActionResult Edit(int id, ProductModel model, IFormFile fHinh)
+        {
+            if(id != model.ProductId)
+            {
+                return View();
+            }
+            if (!ModelState.IsValid)
+            {
+                ModelState.AddModelError("loi", "Còn lỗi");
+                return View();
+            }
+            var fileName = MyTools.UploadFile(fHinh, "products");
+            if (!string.IsNullOrEmpty(fileName))
+            {
+                model.Image = fileName;
+            }
+
+            var productCreated = _productBo.Update(model, id);
+            return RedirectToAction("Edit", new { id = productCreated.ProductId });
         }
     }
 }

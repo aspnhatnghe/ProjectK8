@@ -1,18 +1,20 @@
 ﻿@model Models.ProductModel
 
 @{
-    ViewData["Title"] = "Create";
+    ViewData["Title"] = "Edit";
 }
 <link href="http://cdnjs.cloudflare.com/ajax/libs/summernote/0.8.12/summernote.css" rel="stylesheet">
-
-<h1>Create</h1>
-
-<h4>ProductModel</h4>
+<h2>Edit Product</h2>
 <hr />
 <div class="row">
     <div class="col-md-12">
-        <form asp-action="Create" enctype="multipart/form-data">
+        <form asp-action="Edit" enctype="multipart/form-data">
             <div asp-validation-summary="All" class="text-danger"></div>
+            <div class="form-group d-none">
+                <label asp-for="ProductId" class="control-label"></label>
+                <input asp-for="ProductId" class="form-control" />
+                <span asp-validation-for="ProductId" class="text-danger"></span>
+            </div>
             <div class="form-group">
                 <label asp-for="ProductName" class="control-label"></label>
                 <input asp-for="ProductName" class="form-control" />
@@ -25,10 +27,8 @@
             </div>
             <div class="form-group">
                 <label asp-for="Image" class="control-label"></label>
-                <input asp-for="Image" class="form-control d-none" />
+                <img src="~/images/products/@Model.Image" data-img="/images/products/@Model.Image" id="imagePreview" width="300" />
                 <input type="file" name="fHinh" id="fHinh" class="form-control" />
-                <br />
-                <img id="imagePreview" width="300" />
             </div>
             <div class="form-group">
                 <label asp-for="Price" class="control-label"></label>
@@ -37,16 +37,16 @@
             </div>
             <div class="form-group">
                 <label asp-for="SupplierId" class="control-label"></label>
-                <select asp-for="SupplierId" class="form-control" asp-items="@ViewBag.Supplier"></select>
+                <input asp-for="SupplierId" class="form-control" />
                 <span asp-validation-for="SupplierId" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <label asp-for="CategoryId" class="control-label"></label>
-                <select asp-for="CategoryId" class="form-control" asp-items="@ViewBag.Category"></select>
+                <input asp-for="CategoryId" class="form-control" />
                 <span asp-validation-for="CategoryId" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <input type="submit" value="Create" class="btn btn-primary" />
+                <input type="submit" value="Save" class="btn btn-primary" />
             </div>
         </form>
     </div>
@@ -78,10 +78,10 @@
                     imageData.readAsDataURL(this.files[0]);
                 }
                 else {
-                    $("#imagePreview").attr("src", "");
+                    $("#imagePreview").attr("src", $("#imagePreview").attr("data-img"));
                 }
             });
         });
-        
+
     </script>
 }
