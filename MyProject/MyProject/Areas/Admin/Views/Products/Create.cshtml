@@ -11,7 +11,7 @@
 <hr />
 <div class="row">
     <div class="col-md-12">
-        <form asp-action="Create" enctype="multipart/form-data">
+        <form id="CreateProduct" asp-action="Create" enctype="multipart/form-data">
             <div asp-validation-summary="All" class="text-danger"></div>
             <div class="form-group">
                 <label asp-for="ProductName" class="control-label"></label>
@@ -46,7 +46,7 @@
                 <span asp-validation-for="CategoryId" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <input type="submit" value="Create" class="btn btn-primary" />
+                <input type="submit" id="btnSave" value="Create" class="btn btn-primary" />
             </div>
         </form>
     </div>
@@ -57,11 +57,33 @@
 </div>
 
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
     <script src="http://cdnjs.cloudflare.com/ajax/libs/summernote/0.8.12/summernote.js"></script>
+    <script src="https://cdn.jsdelivr.net/jquery.validation/1.16.0/jquery.validate.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/jquery.validation/1.16.0/additional-methods.min.js"></script>
 
     <script>
         $(function () {
+            $("#CreateProduct").validate({
+                rules: {
+                    fHinh: {
+                        required: true,
+                        extension: "png|jpg|gif"
+                    }
+                },
+                messages: {
+                    fHinh: {
+                        required: "*",
+                        extension: "Chỉ chọn file png|jpg|gif"
+                    }
+                }
+            });
+
+            $("#btnSave").click(function () {
+                if ($("#CreateProduct").valid()) {
+                    $("#CreateProduct").submit();
+                }
+            });
+
             $('#Description').summernote({
                 tabsize: 2,
                 height: 150
@@ -82,6 +104,6 @@
                 }
             });
         });
-        
+
     </script>
 }

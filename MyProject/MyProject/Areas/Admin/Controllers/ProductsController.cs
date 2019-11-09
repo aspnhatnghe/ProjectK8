@@ -25,7 +25,7 @@ namespace MyProject.Areas.Admin.Controllers
         }
         public IActionResult Index()
         {
-            var data = _productBo.GetAll();            
+            var data = _productBo.GetAll();                        
             return View(data);
         }
         public IActionResult Create()
