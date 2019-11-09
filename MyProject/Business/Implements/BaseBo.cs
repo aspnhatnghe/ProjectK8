@@ -30,7 +30,7 @@ namespace Business.Implements
             return new UnitOfWork(newContext);
         }
 
-        public virtual IQueryable<TModel> GetAll()
+        public virtual IEnumerable<TModel> GetAll()
         {
             try
             {
@@ -47,7 +47,7 @@ namespace Business.Implements
                 throw ex;
             }
         }
-        public virtual IQueryable<TModel> GetAll(IUnitOfWork unitOfWork)
+        public virtual IEnumerable<TModel> GetAll(IUnitOfWork unitOfWork)
         {
             try
             {
@@ -63,7 +63,7 @@ namespace Business.Implements
                 // Map model list to models list.
                 models = _mapper.Map<List<TModel>>(entities);
 
-                return models.AsQueryable();
+                return models;
             }
             catch (Exception ex)
             {
@@ -181,7 +181,7 @@ namespace Business.Implements
             }
         }
 
-        public IQueryable<TModel> GetTop(Func<TEntity, bool> filter, int count, Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>> orderBy = null)
+        public IEnumerable<TModel> GetTop(Func<TEntity, bool> filter, int count, Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>> orderBy = null)
         {
             try
             {
@@ -201,7 +201,7 @@ namespace Business.Implements
 
                 }
 
-                return models.AsQueryable();
+                return models;
             }
             catch (Exception ex)
             {

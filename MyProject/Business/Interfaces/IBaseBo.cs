@@ -19,12 +19,12 @@ namespace Business.Interfaces
         TModel GetFirstIgnoreNull(IUnitOfWork unitOfWork, Func<TEntity, bool> filter);
         TModel GetFirstWithInclude(Expression<Func<TEntity, bool>> filter, params Expression<Func<TEntity, object>>[] includes);
         TModel GetFirstWithIncludeIgnoreNull(Expression<Func<TEntity, bool>> filter, params Expression<Func<TEntity, object>>[] includes);
-        IQueryable<TModel> GetAll();
-        IQueryable<TModel> GetAll(IUnitOfWork unitOfWork);
+        IEnumerable<TModel> GetAll();
+        IEnumerable<TModel> GetAll(IUnitOfWork unitOfWork);
         IEnumerable<TModel> Get(Func<TEntity, bool> filter);
         IEnumerable<TModel> Get(IUnitOfWork unitOfWork, Func<TEntity, bool> filter);
         IEnumerable<TModel> GetIgnoreNull(Func<TEntity, bool> filter);
-        IQueryable<TModel> GetTop(Func<TEntity, bool> filter, int count, Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>> orderBy = null);
+        IEnumerable<TModel> GetTop(Func<TEntity, bool> filter, int count, Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>> orderBy = null);
 
         IUnitOfWork NewDbContext();
 
