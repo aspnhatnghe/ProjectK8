@@ -13,6 +13,8 @@ namespace MyProject.Models
     {
         public MappingProfile()
         {
+            CreateMap<CustomerModel, Customer>().ReverseMap();
+
             CreateMap<Product, ProductViewModel>()
                 .ForMember(d => d.SupplierName, opt => opt.MapFrom(s => s.Supplier.SupplierName))
                 .ForMember(d => d.CategoryName, opt => opt.MapFrom(s => s.Category.CategoryName));
