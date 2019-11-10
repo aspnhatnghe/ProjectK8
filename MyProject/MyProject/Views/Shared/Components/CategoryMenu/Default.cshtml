@@ -1,17 +1,17 @@
-﻿@model IEnumerable<MyProject.DataModels.Category>
+﻿@model IEnumerable<Models.CategoryModel>
 @{
-    var parentCategory = Model.Where(p => !p.ParentCategoryId.HasValue);
+    var parentCategory = Model.Where(p => string.IsNullOrEmpty(p.ParentCategoryId)).OrderBy(p => p.CategoryName);
 }
 @foreach (var item in parentCategory)
 {
-    var childCategory = Model.Where(p => p.ParentCategoryId.HasValue && p.ParentCategoryId.Value == item.CaterogyId);
+    var childCategory = Model.Where(p =>  p.ParentCategoryId == item.CategoryId);
     <li>
-        <a href="product-details.html">@item.CaterogyName<i class="fa fa-angle-down"></i></a>
+        <a href="product-details.html">@item.CategoryName<i class="fa fa-angle-down"></i></a>
         <div class="mega-menu">
             <span>
                 @foreach (var child in childCategory)
                 {
-                    <a href="shop.html">@child.CaterogyName</a>
+                    <a href="shop.html">@child.CategoryName</a>
                 }
             </span>
         </div>

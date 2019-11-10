@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Business.Interfaces;
+using Microsoft.AspNetCore.Mvc;
 using MyProject.DataModels;
 using MyProject.Repositories;
 using System;
@@ -10,8 +11,8 @@ namespace MyProject.ViewComponents
 {
     public class CategoryMenu : ViewComponent
     {
-        private readonly ICategoryRepo _categoryRepo;
-        public CategoryMenu(ICategoryRepo categoryRepo)
+        private readonly ICategoryBo _categoryRepo;
+        public CategoryMenu(ICategoryBo categoryRepo)
         {
             _categoryRepo = categoryRepo;
         }
