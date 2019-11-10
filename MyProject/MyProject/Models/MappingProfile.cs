@@ -26,6 +26,8 @@ namespace MyProject.Models
             CreateMap<CategoryModel, Category>()
                 .ReverseMap();
             CreateMap<SupplierModel, Supplier>().ReverseMap();
+
+            CreateMap<RegisterViewModel, CustomerModel>();
         }
     }
 }

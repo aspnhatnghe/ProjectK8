@@ -47,6 +47,7 @@ namespace MyProject
             services.AddTransient<IProductBo, ProductBo>();
             services.AddTransient<ICategoryBo, CategoryBo>();
             services.AddTransient<ISupplierBo, SupplierBo>();
+            services.AddTransient<IUserBo, UserBo>();
 
             services.AddDbContext<MyDbContext>(option => option.UseSqlServer(Configuration.GetConnectionString("ProjectK8")));
 

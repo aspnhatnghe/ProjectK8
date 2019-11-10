@@ -5,16 +5,26 @@ using System.Text;
 
 namespace Entities.Commons
 {
+    public static class MyRole
+    {
+        public const string SuperAdmin = "SuperAdmin";
+        public const string Administrator = "Administrator";
+        public const string Customer = "Customer";
+        public const string Accountant = "Accountant";
+        public const string Guest = "Guest";
+    }
     public enum Role
     {
+        [Description("SuperAdmin")]
+        SuperAdmin = 4,
         [Description("Administrator")]
-        Administrator,
+        Administrator = 3,
         [Description("Customer")]
-        Customer,
+        Customer = 1,
         [Description("Accountant")]
-        Accountant,
+        Accountant = 2,
         [Description("Guest")]
-        Guest
+        Guest = 0
     }
 
     public enum OrderStatus
