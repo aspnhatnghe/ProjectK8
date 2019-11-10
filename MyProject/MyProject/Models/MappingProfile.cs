@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Entities;
 using Models;
+using Models.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,6 +13,10 @@ namespace MyProject.Models
     {
         public MappingProfile()
         {
+            CreateMap<Product, ProductViewModel>()
+                .ForMember(d => d.SupplierName, opt => opt.MapFrom(s => s.Supplier.SupplierName))
+                .ForMember(d => d.CategoryName, opt => opt.MapFrom(s => s.Category.CategoryName));
+
             CreateMap<ProductModel, Product>()
                 .ReverseMap();
             CreateMap<CategoryModel, Category>()
