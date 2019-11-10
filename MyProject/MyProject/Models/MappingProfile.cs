@@ -17,6 +17,8 @@ namespace MyProject.Models
                 .ForMember(d => d.SupplierName, opt => opt.MapFrom(s => s.Supplier.SupplierName))
                 .ForMember(d => d.CategoryName, opt => opt.MapFrom(s => s.Category.CategoryName));
 
+            CreateMap<ProductModel, CartItem>();
+
             CreateMap<ProductModel, Product>()
                 .ReverseMap();
             CreateMap<CategoryModel, Category>()
