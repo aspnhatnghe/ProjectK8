@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Business.Interfaces;
 using Entities;
+using Microsoft.EntityFrameworkCore;
 using Models;
 using Models.ViewModels;
 using System;
@@ -28,7 +29,7 @@ namespace Business.Implements
 
                     if(!string.IsNullOrEmpty(categoryId))
                     {
-                        entityProduct = entityProduct.Where(p => p.CategoryId == categoryId).AsQueryable();
+                        entityProduct = entityProduct.Where(p => p.CategoryId == categoryId || p.Category.ParentCategoryId == categoryId).AsQueryable();
                     }
 
                     if(supplierId.HasValue)
@@ -41,6 +42,7 @@ namespace Business.Implements
                         entityProduct = entityProduct.Where(p => p.ProductName.Contains(keyword)).AsQueryable();
                     }
 
+                    entityProduct = entityProduct.Include(p => p.Supplier).Include(p => p.Category);
 
                     models = _mapper.Map<List<ProductViewModel>>(entityProduct);
                 }

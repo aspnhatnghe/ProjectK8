@@ -6,12 +6,12 @@
 {
     var childCategory = Model.Where(p =>  p.ParentCategoryId == item.CategoryId);
     <li>
-        <a href="product-details.html">@item.CategoryName<i class="fa fa-angle-down"></i></a>
+        <a asp-controller="Product" asp-action="Index" asp-route-categoryId="@item.CategoryId">@item.CategoryName<i class="fa fa-angle-down"></i></a>
         <div class="mega-menu">
             <span>
                 @foreach (var child in childCategory)
                 {
-                    <a href="shop.html">@child.CategoryName</a>
+                    <a asp-controller="Product" asp-action="Index" asp-route-categoryId="@child.CategoryId">@child.CategoryName</a>
                 }
             </span>
         </div>
