@@ -6,18 +6,23 @@ using MyProject.Helpers;
 using System.Collections.Generic;
 using System.Linq;
 using AutoMapper;
+using Models;
 
 namespace MyProject.Controllers
 {
     public class CartController : Controller
     {
         private readonly IProductBo _productBo;
+        private readonly IOrderBo _orderBo;
         private readonly IMapper _mapper;
+        private readonly IPaymentBo _paymentBo;
         
-        public CartController(IProductBo productBo, IMapper mapper)
+        public CartController(IProductBo productBo, IMapper mapper, IPaymentBo paymentBo, IOrderBo orderBo)
         {
             _productBo = productBo;
             _mapper = mapper;
+            _paymentBo = paymentBo;
+            _orderBo = orderBo;
         }
 
         public List<CartItem> CartItems
@@ -59,6 +64,26 @@ namespace MyProject.Controllers
         public IActionResult Index()
         {
             return View(CartItems);
+        }
+
+        public IActionResult Payment1()
+        {
+            if(CartItems.Count == 0)
+            {
+                return Redirect("/Product");
+            }
+            _orderBo.Payment(CartItems, null);
+            return Json(true);
+        }
+
+        public IActionResult Payment2()
+        {
+            if (CartItems.Count == 0)
+            {
+                return Redirect("/Product");
+            }
+            _paymentBo.Payment(CartItems, null);
+            return Json(true);
         }
     }
 }

@@ -25,7 +25,7 @@ namespace Business.Implements
             _serviceProvider = serviceProvider;
         }
 
-        void IPaymentBo.Payment(List<CartItem> carts, string customerId)
+        public void Payment(List<CartItem> carts, string customerId)
         {
             var newContext = _serviceProvider.GetRequiredService<IServiceScopeFactory>().CreateScope()
                 .ServiceProvider.GetRequiredService<MyDbContext>();            
