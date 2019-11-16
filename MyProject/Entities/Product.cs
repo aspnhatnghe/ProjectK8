@@ -14,7 +14,7 @@ namespace Entities
         public string Description { get; set; }
         public string Image { get; set; }
         public double Price { get; set; }
-
+        public int Quantity { get; set; }
         public int SupplierId { get; set; }
         [ForeignKey("SupplierId")]
         public Supplier Supplier { get; set; }
