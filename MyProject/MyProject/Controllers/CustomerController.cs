@@ -6,6 +6,7 @@ using AutoMapper;
 using Business.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Models;
+using Models.ViewModels;
 using MyProject.Helpers;
 using MyProject.Models;
 
@@ -38,6 +39,18 @@ namespace MyProject.Controllers
             userModel.Password = (model.Password + userModel.RandomKey).ToMD5();
 
             _userBo.Insert(userModel);
+            return View();
+        }
+
+        [HttpGet]
+        public IActionResult Login()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        public IActionResult Login(LoginViewModel model)
+        {
             return View();
         }
     }
