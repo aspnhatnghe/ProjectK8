@@ -19,9 +19,11 @@ namespace Entities
         public Role Role { get; set; }
 
         public ICollection<Order> Orders { get; set; }
+        public ICollection<UserRole> Roles { get; set; }
         public Customer()
         {
             Orders = new HashSet<Order>();
+            Roles = new HashSet<UserRole>();
         }
     }
 }

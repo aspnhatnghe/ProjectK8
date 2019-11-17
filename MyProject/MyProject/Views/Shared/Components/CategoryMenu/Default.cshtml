@@ -1,19 +1,23 @@
 ﻿@model IEnumerable<Models.CategoryModel>
+@using Entities.Commons;
 @{
     var parentCategory = Model.Where(p => string.IsNullOrEmpty(p.ParentCategoryId)).OrderBy(p => p.CategoryName);
 }
 @foreach (var item in parentCategory)
 {
-    var childCategory = Model.Where(p =>  p.ParentCategoryId == item.CategoryId);
-    <li>
-        <a asp-controller="Product" asp-action="Index" asp-route-categoryId="@item.CategoryId">@item.CategoryName<i class="fa fa-angle-down"></i></a>
-        <div class="mega-menu">
-            <span>
-                @foreach (var child in childCategory)
-                {
-                    <a asp-controller="Product" asp-action="Index" asp-route-categoryId="@child.CategoryId">@child.CategoryName</a>
-                }
-            </span>
-        </div>
-    </li>
+    var childCategory = Model.Where(p => p.ParentCategoryId == item.CategoryId);
+    if (User.IsInRole(MyRole.Customer))
+    {
+        <li>
+            <a asp-controller="Product" asp-action="Index" asp-route-categoryId="@item.CategoryId">@item.CategoryName<i class="fa fa-angle-down"></i></a>
+            <div class="mega-menu">
+                <span>
+                    @foreach (var child in childCategory)
+                    {
+                        <a asp-controller="Product" asp-action="Index" asp-route-categoryId="@child.CategoryId">@child.CategoryName</a>
+                    }
+                </span>
+            </div>
+        </li>
+    }
 }

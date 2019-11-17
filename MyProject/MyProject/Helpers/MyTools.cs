@@ -1,8 +1,10 @@
 ﻿using Microsoft.AspNetCore.Http;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
@@ -11,6 +13,19 @@ namespace MyProject.Helpers
 {
     public class MyTools
     {
+        public static string GetEnumDescription(Enum value)
+        {
+            FieldInfo fi = value.GetType().GetField(value.ToString());
+
+            DescriptionAttribute[] attributes = fi.GetCustomAttributes(typeof(DescriptionAttribute), false) as DescriptionAttribute[];
+
+            if (attributes != null && attributes.Any())
+            {
+                return attributes.First().Description;
+            }
+
+            return value.ToString();
+        }
         public static string UploadFile(IFormFile fHinh, string folder)
         {
             if (fHinh == null) return string.Empty;
@@ -43,5 +58,7 @@ namespace MyProject.Helpers
             return sb.ToString();
 
         }
+
+        
     }
 }

@@ -6,6 +6,7 @@ using AutoMapper;
 using Business.Implements;
 using Business.Interfaces;
 using Entities;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -57,11 +58,20 @@ namespace MyProject
             services.AddSession(opt => {
                 opt.IdleTimeout = TimeSpan.FromMinutes(30);
             });
+
+            //Cookie base authen
+            services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme).AddCookie(options =>
+            {
+                options.LoginPath = "/Customer/Login";
+                options.LogoutPath = "/Customer/Logout";
+                options.AccessDeniedPath = "/Customer/AccessDenied";
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
+            app.UseAuthentication();
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
