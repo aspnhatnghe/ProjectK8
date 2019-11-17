@@ -3,7 +3,12 @@
     ViewData["Title"] = "Index";
 }
 
-<h1>Index</h1>
+<h1>Doanh thu</h1>
+<form asp-action="Index">
+    <input type="date" name="fromDate" />
+    <input type="date" name="toDate" />
+    <button class="btn btn-primary">Search</button>
+</form>
 
 <!-- https://tobiasahlin.com/blog/chartjs-charts-to-get-you-started/ -->
 
@@ -34,7 +39,7 @@
                     legend: { display: false },
                     title: {
                         display: true,
-                        text: 'Doanh thu bán hàng'
+                        text: 'Doanh thu bán hàng @ViewBag.FromDate.ToString("dd/MM/yyyy") - @ViewBag.ToDate.ToString("dd/MM/yyyy")'
                     }
                 }
             });

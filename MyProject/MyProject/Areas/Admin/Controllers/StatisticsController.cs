@@ -22,6 +22,11 @@ namespace MyProject.Areas.Admin.Controllers
             if (!toDate.HasValue) toDate = DateTime.Now;
             if (!fromDate.HasValue) fromDate = toDate.Value.AddDays(-7);
 
+            toDate = DateTime.Parse(toDate.Value.ToString("MM/dd/yyyy 00:00:00.000")).AddDays(1).AddMilliseconds(-1);// now() + 23:59:59.999
+            fromDate = DateTime.Parse(fromDate.Value.ToString("MM/dd/yyyy 00:00:00.000"));
+
+            //DateTime.UtcNow --> database save UTC time
+
             var data = _context.OrderDetails
                 .Where(cthd => cthd.Order.OrderDate >= fromDate && cthd.Order.OrderDate <= toDate)
                 .GroupBy(cthd => cthd.Product)
@@ -32,6 +37,8 @@ namespace MyProject.Areas.Admin.Controllers
                 });
 
             //return Json(data);
+            ViewBag.FromDate = fromDate;
+            ViewBag.ToDate = toDate;
             return View(data);
         }
     }
