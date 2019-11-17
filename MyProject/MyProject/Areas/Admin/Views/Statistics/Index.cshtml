@@ -1,0 +1,43 @@
+﻿@model IEnumerable<Models.ViewModels.ProductRevenueVM>
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>Index</h1>
+
+<!-- https://tobiasahlin.com/blog/chartjs-charts-to-get-you-started/ -->
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.5.0/Chart.min.js"></script>
+
+<canvas id="bar-chart" width="800" height="450"></canvas>
+@{
+    var productNames = Model.Select(p => p.ProductName).ToList();
+    var revenues = Model.Select(p => p.Revenue / 1000000.0).ToList();
+    var labels = "'" + string.Join("', '", productNames) + "'";
+}
+@section Scripts{
+    <script>
+        $(function () {
+            new Chart($("#bar-chart"), {
+                type: 'bar',
+                data: {
+                    labels: [@Html.Raw(labels)],
+                    datasets: [
+                        {
+                            label: "Doanh thu (tr. đ)",
+                            backgroundColor: ["#3e95cd", "#8e5ea2", "#3cba9f", "#e8c3b9"],
+                            data: [@string.Join(", ", revenues)]
+                        }
+                    ]
+                },
+                options: {
+                    legend: { display: false },
+                    title: {
+                        display: true,
+                        text: 'Doanh thu bán hàng'
+                    }
+                }
+            });
+        });
+    </script>
+}
